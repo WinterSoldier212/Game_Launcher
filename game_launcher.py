@@ -64,7 +64,7 @@ def game_arcanoid():
          pygame.draw.rect(sc, pygame.Color("darkorange"), paddle)
          pygame.draw.circle(sc, pygame.Color("white"), ball.center, ball_radius)
 
-         ball.x +=ball_speed * dx
+         ball.x += ball_speed * dx
          ball.y += ball_speed * dy
 
          if ball.centerx < ball_radius or ball.centerx > WIDTH - ball_radius:
@@ -278,7 +278,7 @@ def game_FastClick():
          self.buttonSurface.fill(self.fillColors["normal"])
          if self.buttonRect.collidepoint(mousePos):
             self.buttonSurface.fill(self.fillColors["hover"])
-            if pygame.mouse.get_pressed(num_buttons=3)[0] and clik_up == True:
+            if pygame.mouse.get_pressed(num_buttons=3)[0] and clik_up == False:
                self.buttonSurface.fill(self.fillColors["pressed"])
                if self.onePress:
                   clik_up = True
@@ -450,7 +450,7 @@ def game_21o4ko():
    butt2 = pygame.Rect(250, 710, 220, 75)
    end_butt = pygame.Rect(10, 710, 440, 75)
 
-   rubashka_karti = pygame.image.load("karta.png").convert()
+   rubashka_karti = pygame.image.load("graphic_cart\\karta.png").convert()
 
    spisok_kart_znach = {
       "6_kresti": 6, "6_pic": 6,"6_chervi": 6,"6_bubi": 6,
@@ -561,17 +561,17 @@ def game_21o4ko():
             process_end_game += 2
 
          if process_end_game == 110:
-            if player_schet == 21 or 21 >= player_schet > computer_schet or (player_koloda[0][0] == "T" and player_koloda[1][0] == "T") or (computer_schet >= 22 > player_schet and not (computer_koloda[0][0] == "T" and computer_koloda[1][0] == "T")):
+            if player_schet == 21 != computer_schet or 21 >= player_schet > computer_schet or (player_koloda[0][0] == "T" and player_koloda[1][0] == "T") or (computer_schet >= 22 > player_schet and not (computer_koloda[0][0] == "T" and computer_koloda[1][0] == "T")):
                win_game = "Победа!"
                render_score = font_end.render(win_game, True, pygame.Color("darkorange"))
                screen.blit(render_score, (330, 305))
 
-            elif 21 >= computer_schet > player_schet or computer_schet == 21 or (computer_koloda[0][0] == "T" and computer_koloda[1][0] == "T") or (player_schet >= 22 > computer_schet and not (player_koloda[0][0] == "T" and player_koloda[1][0] == "T")):
+            elif 21 >= computer_schet > player_schet or computer_schet == 21 != player_schet or (computer_koloda[0][0] == "T" and computer_koloda[1][0] == "T") or (player_schet >= 22 > computer_schet and not (player_koloda[0][0] == "T" and player_koloda[1][0] == "T")):
                win_game = "Проигрыш"
                render_score = font_end.render(win_game, True, pygame.Color("darkorange"))
                screen.blit(render_score, (310, 310))
 
-            elif computer_schet == player_schet:
+            else:
                win_game = "Ничья"
                render_score = font_end.render(win_game, True, pygame.Color("darkorange"))
                screen.blit(render_score, (330, 310))
@@ -688,6 +688,153 @@ def game_21o4ko():
       pygame.display.update()
       clock.tick(fps)
 
+def game_ping_pong():
+   pygame.init()
+
+   # Размер экрана
+   WIDTH, HEIGHT = 1200, 800
+
+   y_paddle_1 = 275
+   y_paddle_2 = 275
+
+   ball_radius = 20
+   ball_speed = 6
+   ball_rect = int(ball_radius * 2 ** 0.5)
+   ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, ball_rect, ball_rect)
+   dx, dy = rnd(-1,2,2), rnd(-1,2,2)
+
+   x_2 = 1150
+   x_1 = 15
+
+   font = pygame.font.SysFont('Cosmic', 100, bold=True)
+   font_2 = pygame.font.SysFont('Times new roman', 40, bold=True)
+   font_win = pygame.font.SysFont('Times new roman', 120, bold=True)
+
+   paddle_1 = pygame.Rect(x_1, y_paddle_1, 35, 250)
+   paddle_2 = pygame.Rect(x_2, y_paddle_2, 35, 250)
+
+   block_1 = pygame.Rect(0, 0, 1200, 50)
+   block_2 = pygame.Rect(0, 750, 1200, 50)
+
+   line = pygame.Rect(WIDTH // 2 - 10, 50, 20, 700)
+
+   screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+   paddle_speed = 10
+
+   player_2_schet = 0
+   player_1_schet = 0
+   # Для фпс
+   fps = 60
+   clock = pygame.time.Clock()
+   def detect_collision(dx,dy, ball, rect, ball_speed, paddle_speed):
+      
+      if dx > 0:
+         delta_x = ball.right - rect.left
+      else:
+         delta_x = rect.right- ball.left
+      if dy > 0:
+         delta_y = ball.bottom - rect.top
+      else:
+         delta_y = rect.bottom - ball.top
+
+      if abs(delta_x - delta_y) < 10:
+         dx, dy = -dx, -dy
+      elif delta_x > delta_y:
+         dy = -dy
+      elif delta_y > delta_x:
+         dx = -dx
+      ball_speed += 1 
+      paddle_speed += 1
+      return dx, dy, ball_speed, paddle_speed
+
+   # Основной цикл
+   while True:
+      # Первым делом зальём экран цветом(Этот процесс не обязателен)
+      screen.fill((00, 66, 00))
+
+      pygame.draw.rect(screen, pygame.Color("darkorange"), paddle_1)
+      pygame.draw.rect(screen, pygame.Color("darkorange"), paddle_2)
+
+      render_schet = font.render(f"{player_1_schet}", True, pygame.Color("darkorange"))
+      screen.blit(render_schet, (WIDTH // 2 - 105, 60))
+      render_schet = font.render(f"{player_2_schet}", True, pygame.Color("darkorange"))
+      screen.blit(render_schet, (WIDTH // 2 + 55, 60))
+
+      if player_1_schet < 10 and player_2_schet < 10:
+         ball.x += ball_speed * dx
+         ball.y += ball_speed * dy
+
+      if ball.colliderect(paddle_1) and dx < 0:
+         dx, dy, ball_speed, paddle_speed = detect_collision(dx, dy, ball, paddle_1, ball_speed, paddle_speed)
+         
+      if ball.colliderect(paddle_2) and dx > 0:
+         dx, dy, ball_speed, paddle_speed = detect_collision(dx, dy, ball, paddle_2, ball_speed, paddle_speed)
+
+      if ball.centery < ball_radius + 50 or ball.centery > HEIGHT - ball_radius - 50:
+         dy = -dy
+
+      if ball.centerx < 0:
+         player_2_schet += 1
+         ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, ball_rect, ball_rect)
+         dx, dy = rnd(-1,2,2), rnd(-1,2,2)
+         ball_speed = 6
+         paddle_speed = 10
+
+      if ball.centerx > 1200:
+         player_1_schet += 1
+         ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, ball_rect, ball_rect)
+         dx, dy = rnd(-1,2,2), rnd(-1,2,2)
+         ball_speed = 6
+         paddle_speed = 10
+
+      pygame.draw.circle(screen, pygame.Color("white"), ball.center, ball_radius)
+
+      pygame.draw.rect(screen, pygame.Color("white"), line)
+      pygame.draw.rect(screen, pygame.Color("black"), block_1)
+      pygame.draw.rect(screen, pygame.Color("black"), block_2)
+      render_schet = font_2.render(f"""player 1                                                                                        player 2""", True, pygame.Color("darkorange"))
+      screen.blit(render_schet, (15, 0)) 
+
+      for event in pygame.event.get():
+         # Если выключаем вкладку - программа выключается
+         if event.type == pygame.QUIT:
+            menu()
+
+      key = pygame.key.get_pressed()
+
+      # А это обрабатываем нажатия 
+      if player_1_schet < 10 and player_2_schet < 10:
+         if key[pygame.K_w] and paddle_1.y > 50:
+            paddle_1.y -= paddle_speed
+         if key[pygame.K_s] and paddle_1.y < HEIGHT - 300:
+            paddle_1.y += paddle_speed
+         if key[pygame.K_UP] and paddle_2.y > 50:
+            paddle_2.y -= paddle_speed
+         if key[pygame.K_DOWN] and paddle_2.y < HEIGHT - 300:
+            paddle_2.y += paddle_speed
+
+      else:
+         if player_1_schet == 10:
+            win_player = "Player 1"
+         else:
+            win_player = "Player 2"
+         while True:
+            render_win = font_win.render(win_player, True, pygame.Color("orange"))
+            screen.blit(render_win, (WIDTH // 3 - 10, HEIGHT // 3 - 100))
+            render_win = font_win.render("GAME WIN", True, pygame.Color("orange"))
+            screen.blit(render_win, (WIDTH // 3 - 120, HEIGHT // 3 + 20))
+            pygame.display.flip()
+            for event in pygame.event.get():
+               if event.type == pygame.QUIT:
+                     menu()
+            key = pygame.key.get_pressed()
+            if key[pygame.K_r]:
+               game_ping_pong()
+
+      pygame.display.flip()
+      clock.tick(fps)
+
 # Главное меню
 def menu():
    pygame.init()
@@ -698,6 +845,8 @@ def menu():
    img_1 = pygame.image.load("icons_game\\game_arcanoid.jpg").convert()
    img_3 = pygame.image.load("icons_game\\game_fastclick.jpg").convert()
    img_2 = pygame.image.load("icons_game\\game_snake.jpg").convert()
+   img_4 = pygame.image.load("icons_game\\game_21.jpg").convert()
+   img_5 = pygame.image.load("icons_game\\game_ping_pong.jpg").convert()
 
    while True:
       for event in pygame.event.get():
@@ -725,11 +874,22 @@ def menu():
             if 875 <= mouse[0] <= 875 + 250 and 75 <= mouse[1] <= 75 + 250:
                game_FastClick()
 
+            if 75 <= mouse[0] <= 75 + 250 and 475 <= mouse[1] <= 475 + 250:
+               game_21o4ko()
+
+            if 475 <= mouse[0] <= 475 + 250 and 475 <= mouse[1] <= 475 + 250:
+               game_ping_pong()
+
+            if 875 <= mouse[0] <= 875 + 250 and 475 <= mouse[1] <= 475 + 250:
+               pass
+
          screen.blit(img_1, (75, 75))
          screen.blit(img_2, (475, 75))
          screen.blit(img_3, (875, 75))
+         screen.blit(img_4, (75, 475))
+         screen.blit(img_5, (475, 475))
+         # screen.blit(img_6, (875, 75))
 
          pygame.display.update()
 
-game_21o4ko()
-# menu()
+menu()
