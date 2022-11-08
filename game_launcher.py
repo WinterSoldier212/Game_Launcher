@@ -135,13 +135,11 @@ def game_snake():
 
       score = 0
 
-      bg_game = pygame.image.load("background\\bg_snake.jpg").convert()
-
       font_score = pygame.font.SysFont('arial', 50, bold=True)
       font = pygame.font.SysFont('arial', 120, bold=True)
 
       x, y = rnd(50, WIDTH - 50, SIZE), rnd(50, HEIGHT - 50, SIZE)
-      apple = rnd(50, WIDTH - 50, SIZE), rnd(50, HEIGHT - 50, SIZE)
+      apple = rnd(50, WIDTH - 50, SIZE) + 25, rnd(50, HEIGHT - 50, SIZE) + 25
       
       dirs = {
          "W": True,
@@ -154,31 +152,44 @@ def game_snake():
       snake = [(x, y)]
       snake.append((x, y))
       dx, dy = 0, 0
-      fps = 7.5
+      fps = 15
+
+      fpsggg = 0
 
       pygame.init()
       sc = pygame.display.set_mode([WIDTH, HEIGHT])
       clock = pygame.time.Clock()
 
-      while True:
+      yes = True
 
-         sc.blit(bg_game,(0, 0))
-         [(pygame.draw.rect(sc, pygame.Color("blue"), (i, j, SIZE - 2, SIZE - 2))) for i, j in snake]
-         pygame.draw.rect(sc, pygame.Color("darkred"), (*apple, SIZE, SIZE))
+      while True:
+         fpsggg += 1
+         [(pygame.draw.rect(sc, pygame.Color("#003900"), (i, j, SIZE, SIZE))) for i in range(0, 1200, 100) for j in range(0, 800, 100)]
+         [(pygame.draw.rect(sc, pygame.Color("#004500"), (i, j, SIZE, SIZE))) for i in range(50, 1200, 100) for j in range(0, 800, 100)]
+         [(pygame.draw.rect(sc, pygame.Color("#003900"), (i, j, SIZE, SIZE))) for i in range(50, 1200, 100) for j in range(50, 800, 100)]
+         [(pygame.draw.rect(sc, pygame.Color("#004500"), (i, j, SIZE, SIZE))) for i in range(0, 1200, 100) for j in range(50, 800, 100)]
+
+         [(pygame.draw.rect(sc, pygame.Color("darkblue"), (i, j, SIZE - 1, SIZE - 1))) for i, j in snake]
+         pygame.draw.circle(sc, "#700000", (*apple,), 22)
+         pygame.draw.circle(sc, "#002200", (*apple,), 22, 3)
+         pygame.draw.line(sc, "#002200", [apple[0], apple[1] - 13], [apple[0], apple[1] - 30],  3)
 
          render_score = font_score.render(f"Score: {score}", True, pygame.Color("orange"))
 
          sc.blit(render_score, (13, 5))
 
-         x += dx * SIZE
-         y += dy * SIZE
+         if fpsggg == 3:
+            yes = True
+            fpsggg = 0
+            x += dx * SIZE
+            y += dy * SIZE
 
-         snake.append((x, y))
-         snake = snake[-length:]
+            snake.append((x, y))
+            snake = snake[-length:]
 
          # Поедания яблок змейкой
-         if snake[-1] == apple:
-            apple = rnd(0, WIDTH, SIZE), rnd(0, HEIGHT, SIZE)
+         if (snake[-1][0] + 25, snake[-1][1] + 25) == apple:
+            apple = rnd(0, WIDTH, SIZE) + 25, rnd(0, HEIGHT, SIZE) + 25
             length += 1
             fps += 0.5
             score += 1
@@ -195,7 +206,7 @@ def game_snake():
                key = pygame.key.get_pressed()
                if key[pygame.K_r]:
                   game_snake()
-            
+         
          pygame.display.flip()
          clock.tick(fps)
 
@@ -205,21 +216,25 @@ def game_snake():
          
          key = pygame.key.get_pressed()
 
-         if ((key[pygame.K_w]) or (key[pygame.K_UP])) and dirs["W"]:
+         if ((key[pygame.K_w]) or (key[pygame.K_UP])) and dirs["W"] and yes == True:
             dx, dy = 0, -1
             dirs = {"W": True, "S": False, "A": True, "D": True}
+            yes = False
 
-         if ((key[pygame.K_s]) or (key[pygame.K_DOWN])) and dirs["S"]:
+         if ((key[pygame.K_s]) or (key[pygame.K_DOWN])) and dirs["S"] and yes == True:
             dx, dy = 0, 1
             dirs = {"W": False, "S": True, "A": True, "D": True}
+            yes = False
 
-         if ((key[pygame.K_d]) or (key[pygame.K_RIGHT])) and dirs["D"]:
+         if ((key[pygame.K_d]) or (key[pygame.K_RIGHT])) and dirs["D"] and yes == True:
             dx, dy = 1, 0
             dirs = {"W": True, "S": True, "A": False, "D": True}
+            yes = False
 
-         if ((key[pygame.K_a]) or (key[pygame.K_LEFT])) and dirs["A"]:
+         if ((key[pygame.K_a]) or (key[pygame.K_LEFT])) and dirs["A"] and yes == True:
             dx, dy = -1, 0
             dirs = {"W": True, "S": True, "A": True, "D": False}
+            yes = False
    except:
       pass
 
