@@ -293,7 +293,7 @@ def game_FastClick():
          self.buttonSurface.fill(self.fillColors["normal"])
          if self.buttonRect.collidepoint(mousePos):
             self.buttonSurface.fill(self.fillColors["hover"])
-            if pygame.mouse.get_pressed(num_buttons=3)[0] and clik_up == False:
+            if pygame.mouse.get_pressed(num_buttons=3)[0] and clik_up == True:
                self.buttonSurface.fill(self.fillColors["pressed"])
                if self.onePress:
                   clik_up = True
