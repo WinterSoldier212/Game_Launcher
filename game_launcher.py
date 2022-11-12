@@ -535,7 +535,7 @@ def game_21o4ko():
    end_game = False
 
    while True:
-
+      
       y_comp_cart = 50
       x_comp_cart = 500
 
@@ -672,7 +672,7 @@ def game_21o4ko():
                player_plus_kart = True
                process_player_plus = True
             
-            if 250 <= mouse[0] <= 250 + 220 and 710 <= mouse[1] <= 710 + 75 and process_comp_plus == False:
+            if 250 <= mouse[0] <= 250 + 220 and 710 <= mouse[1] <= 710 + 75 and process_comp_plus == False and player_plus_kart == False:
                end_game = True
 
 
@@ -715,35 +715,36 @@ def game_ping_pong():
    ball_radius = 20
    ball_speed = 6
    ball_rect = int(ball_radius * 2 ** 0.5)
-   ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, ball_rect, ball_rect)
+   ball = pygame.Rect(WIDTH / 2 - 15, HEIGHT / 2 - 13, ball_rect, ball_rect)
    dx, dy = rnd(-1,2,2), rnd(-1,2,2)
 
    x_2 = 1150
    x_1 = 15
 
-   font = pygame.font.SysFont('Cosmic', 100, bold=True)
+   font = pygame.font.SysFont('Times new roman', 100, bold=True)
    font_2 = pygame.font.SysFont('Times new roman', 40, bold=True)
-   font_win = pygame.font.SysFont('Times new roman', 120, bold=True)
+   font_win = pygame.font.SysFont('Times new roman', 100, bold=True)
 
    paddle_1 = pygame.Rect(x_1, y_paddle_1, 35, 250)
    paddle_2 = pygame.Rect(x_2, y_paddle_2, 35, 250)
 
    block_1 = pygame.Rect(0, 0, 1200, 50)
    block_2 = pygame.Rect(0, 750, 1200, 50)
+   pole = pygame.Rect(0, 44, 1200, 706)
 
    line = pygame.Rect(WIDTH // 2 - 10, 50, 20, 700)
 
    screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-   paddle_speed = 10
+   paddle_speed = 14
+   paddle_for = 0
 
    player_2_schet = 0
    player_1_schet = 0
    # Для фпс
    fps = 60
    clock = pygame.time.Clock()
-   def detect_collision(dx,dy, ball, rect, ball_speed, paddle_speed):
-      
+   def detect_collision(dx,dy, ball, rect):
       if dx > 0:
          delta_x = ball.right - rect.left
       else:
@@ -759,17 +760,20 @@ def game_ping_pong():
          dy = -dy
       elif delta_y > delta_x:
          dx = -dx
-      ball_speed += 1 
-      paddle_speed += 1
-      return dx, dy, ball_speed, paddle_speed
+      return dx, dy
 
    # Основной цикл
    while True:
       # Первым делом зальём экран цветом(Этот процесс не обязателен)
-      screen.fill((00, 66, 00))
+      screen.fill("#004900")
 
       pygame.draw.rect(screen, pygame.Color("darkorange"), paddle_1)
       pygame.draw.rect(screen, pygame.Color("darkorange"), paddle_2)
+
+      pygame.draw.rect(screen, pygame.Color("white"), line)
+      pygame.draw.rect(screen, pygame.Color("#112255"), block_1)
+      pygame.draw.rect(screen, pygame.Color("#112255"), block_2)
+      pygame.draw.rect(screen, pygame.Color("white"), pole, 6)
 
       render_schet = font.render(f"{player_1_schet}", True, pygame.Color("darkorange"))
       screen.blit(render_schet, (WIDTH // 2 - 105, 60))
@@ -781,35 +785,40 @@ def game_ping_pong():
          ball.y += ball_speed * dy
 
       if ball.colliderect(paddle_1) and dx < 0:
-         dx, dy, ball_speed, paddle_speed = detect_collision(dx, dy, ball, paddle_1, ball_speed, paddle_speed)
+         dx, dy = detect_collision(dx, dy, ball, paddle_1)
+         ball_speed += 1
+         paddle_for += 1
          
       if ball.colliderect(paddle_2) and dx > 0:
-         dx, dy, ball_speed, paddle_speed = detect_collision(dx, dy, ball, paddle_2, ball_speed, paddle_speed)
+         dx, dy = detect_collision(dx, dy, ball, paddle_2)
+         ball_speed += 1
+         paddle_for += 1
 
-      if ball.centery < ball_radius + 50 or ball.centery > HEIGHT - ball_radius - 50:
-         dy = -dy
+      if ball.colliderect(block_1):
+         dx, dy = detect_collision(dx, dy, ball, block_1)
+      if ball.colliderect(block_2):
+         dx, dy = detect_collision(dx, dy, ball, block_2)
+
+      if paddle_for == 3:
+         paddle_speed += 1
+         paddle_for = 0
 
       if ball.centerx < 0:
          player_2_schet += 1
-         ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, ball_rect, ball_rect)
+         ball = pygame.Rect(WIDTH / 2 - 15, HEIGHT / 2 - 13, ball_rect, ball_rect)
          dx, dy = rnd(-1,2,2), rnd(-1,2,2)
-         ball_speed = 6
-         paddle_speed = 10
+         ball_speed = 7
 
       if ball.centerx > 1200:
          player_1_schet += 1
-         ball = pygame.Rect(WIDTH // 2, HEIGHT // 2, ball_rect, ball_rect)
+         ball = pygame.Rect(WIDTH / 2 - 15, HEIGHT / 2 - 13, ball_rect, ball_rect)
          dx, dy = rnd(-1,2,2), rnd(-1,2,2)
-         ball_speed = 6
-         paddle_speed = 10
+         ball_speed = 7
 
       pygame.draw.circle(screen, pygame.Color("white"), ball.center, ball_radius)
 
-      pygame.draw.rect(screen, pygame.Color("white"), line)
-      pygame.draw.rect(screen, pygame.Color("black"), block_1)
-      pygame.draw.rect(screen, pygame.Color("black"), block_2)
       render_schet = font_2.render(f"""player 1                                                                                        player 2""", True, pygame.Color("darkorange"))
-      screen.blit(render_schet, (15, 0)) 
+      screen.blit(render_schet, (20, -3)) 
 
       for event in pygame.event.get():
          # Если выключаем вкладку - программа выключается
@@ -828,17 +837,15 @@ def game_ping_pong():
             paddle_2.y -= paddle_speed
          if key[pygame.K_DOWN] and paddle_2.y < HEIGHT - 300:
             paddle_2.y += paddle_speed
-
+      
       else:
          if player_1_schet == 10:
             win_player = "Player 1"
          else:
             win_player = "Player 2"
          while True:
-            render_win = font_win.render(win_player, True, pygame.Color("orange"))
-            screen.blit(render_win, (WIDTH // 3 - 10, HEIGHT // 3 - 100))
-            render_win = font_win.render("GAME WIN", True, pygame.Color("orange"))
-            screen.blit(render_win, (WIDTH // 3 - 120, HEIGHT // 3 + 20))
+            render_win = font_win.render(f"{win_player} win", True, pygame.Color("orange"))
+            screen.blit(render_win, (325, HEIGHT / 2 - 100))
             pygame.display.flip()
             for event in pygame.event.get():
                if event.type == pygame.QUIT:
@@ -847,6 +854,36 @@ def game_ping_pong():
             if key[pygame.K_r]:
                game_ping_pong()
 
+      pygame.display.flip()
+      clock.tick(fps)
+
+def game_gravity_chicken():
+   pygame.init()
+   pygame.font.init()
+
+   HEIGHT, WIDTH = 800, 1200
+   screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+   class Chicken():
+      down = True
+      def __init__(self, x, y):
+         super().__init__()
+
+         self.image = pygame.image.load(skin_player)
+         
+         self.change_x = 0
+         self.change_y = 0
+
+
+
+   x, y = 0, 0
+   chicken_cub = pygame.Rect(x, y, 50, 50)
+   skin_player = "game_skins\\chicken.jpg"
+
+   fps = 60
+   clock = pygame.time.Clock()
+
+   while True:
       pygame.display.flip()
       clock.tick(fps)
 
