@@ -1,40 +1,47 @@
-import pygame
+# Импортируем библиотеки
 import random
-from random import randrange as rnd
 import sys
 import time
-
-game_fast_click_score = 0
+from random import randrange as rnd
+import pygame
 
 # Игра "Арканоид"
 def game_arcanoid():
    try:
+      pygame.init()
       pygame.font.init()
+      # Определяем размеры окна в пикселях
       WIDTH, HEIGHT = 1200, 800
+      # Определяем нужный нам фпс для игры
       fps = 60
 
-      bg_game = pygame.image.load("background\\bg_arcanoid.jpg").convert()
-
+      # Присваеваем переменной bg_game конвертируемую картинку, которую будем испоьзовать в качестве фона 
+      bg = pygame.image.load("background\\bg_arcanoid.jpg").convert()
+      # Создаём переменную font и присваеваем ей значение шрифта
       font = pygame.font.SysFont('arial', 120, bold=True)
 
-      paddle_w = 330
-      paddle_h = 35
-      paddle_speed = 15
+      # Параметры paddla
+      paddle_w = 330 # Размеры по у
+      paddle_h = 35 # Размеры по х
+      paddle_speed = 15 # скорость по х 
       paddle = pygame.Rect(WIDTH // 2 - paddle_w // 2, HEIGHT - paddle_h - 10, paddle_w, paddle_h)
 
+      # Параметры круга
       ball_radius = 20
-      ball_speed = 6
+      ball_speed = 6 # скорость
       ball_rect = int(ball_radius * 2 ** 0.5)
       ball = pygame.Rect(rnd(ball_rect, WIDTH - ball_rect), HEIGHT // 2, ball_rect, ball_rect)
-      dx, dy = 1, -1
+      dx, dy = 1, -1 # позиция полёта на оси ох и оу
 
+      # Вложенный список блоков
       block_list = [pygame.Rect(10 + 120 * i, 10 + 70 * j, 100, 50) for i in range(10) for j in range(4)]
+      # Вложенный список цветов блоков
       color_list = [(rnd(30, 256), rnd(30, 256), rnd(30, 256)) for i in range(10) for j in range(4)]
 
-      pygame.init()
-      sc = pygame.display.set_mode((WIDTH, HEIGHT))
+      screen = pygame.display.set_mode((WIDTH, HEIGHT))
       clock = pygame.time.Clock()
 
+      # Обнаружение колиззий о обработка изменения полёта шарика
       def detect_collision(dx,dy, ball, rect):
          if dx > 0:
             delta_x = ball.right - rect.left
@@ -57,25 +64,34 @@ def game_arcanoid():
          for event in pygame.event.get():
             if event.type == pygame.QUIT:
                menu()
+         
+         # Отрисовываем фон в координатах 0, 0
+         screen.blit(bg, (0,0))
 
-         sc.blit(bg_game, (0,0))
+         # Отрисовываем с помощью вложенного списка блоки
+         [pygame.draw.rect(screen, color_list[color], block) for color, block in enumerate(block_list)]
+         # Отрисовываем Paddle
+         pygame.draw.rect(screen, pygame.Color("darkorange"), paddle)
+         # Отрисовываем круг
+         pygame.draw.circle(screen, pygame.Color("white"), ball.center, ball_radius)
 
-         [pygame.draw.rect(sc, color_list[color], block) for color, block in enumerate(block_list)]
-         pygame.draw.rect(sc, pygame.Color("darkorange"), paddle)
-         pygame.draw.circle(sc, pygame.Color("white"), ball.center, ball_radius)
-
+         # Движение шарика по осям ох и оу
          ball.x += ball_speed * dx
          ball.y += ball_speed * dy
 
+         # столкновение с границей по бокам и изменение полёта по оси ох
          if ball.centerx < ball_radius or ball.centerx > WIDTH - ball_radius:
             dx = -dx
          
+         # столкновение с границей сверху и изменение полёта по оси оу
          if ball.centery < ball_radius:
             dy = -dy
 
+         # колизия с падлом
          if ball.colliderect(paddle) and dy > 0:
             dx, dy = detect_collision(dx, dy, ball, paddle)
 
+         # столкновение с блоками и изменение полёта шарика, а так же его ускорение
          hit_index = ball.collidelist(block_list)
          if hit_index != -1:
             hit_rect = block_list.pop(hit_index)
@@ -83,39 +99,53 @@ def game_arcanoid():
             dx, dy = detect_collision(dx, dy, ball, hit_rect)
 
             hit_rect.inflate_ip(ball.width * 0.5, ball.height * 0.5)
-            pygame.draw.rect(sc, hit_color, hit_rect)
+            pygame.draw.rect(screen, hit_color, hit_rect)
             fps += 3
             if paddle_speed % 3 == 0 and paddle_speed <= 24:
                paddle_speed += 1
-
+         # проверка что шарик вылетел за пределы нижнего поля
          if ball.bottom > HEIGHT:
             while True:
+               # Создаём надпись "GAME OVER" жирным шрифтом и оранживым цветом
                render_win = font.render("GAME OVER", True, pygame.Color("darkorange"))
-               sc.blit(render_win, (WIDTH // 3 - 110, HEIGHT // 3 + 20))
+               # Выводим на экран надпись
+               screen.blit(render_win, (WIDTH // 3 - 110, HEIGHT // 3 + 20))
+               # Обновляем экран, чтобы надпись была видна
                pygame.display.flip()
+               # Процесс выхода в лоби/меню
                for event in pygame.event.get():
                   if event.type == pygame.QUIT:
                         menu()
-               key = pygame.key.get_pressed()
-               if key[pygame.K_r]:
-                  game_arcanoid()
-      
-         elif not len(block_list):
-            while True:
-               render_win = font.render("GAME WIN", True, pygame.Color("orange"))
-               sc.blit(render_win, (WIDTH // 3 - 120, HEIGHT // 3 + 20))
-               pygame.display.flip()
-               for event in pygame.event.get():
-                  if event.type == pygame.QUIT:
-                        menu()
+               # Процесс перезагрузки игры
                key = pygame.key.get_pressed()
                if key[pygame.K_r]:
                   game_arcanoid()
 
-         key = pygame.key.get_pressed() 
+         # Если блоки заканчиваются, то происходит следующий процесс:
+         elif not len(block_list):
+            while True:
+               # Создаём надпись "GAME WIN" жирным шрифтом и оранживым цветом
+               render_win = font.render("GAME WIN", True, pygame.Color("orange"))
+               # Выводим на экран надпись
+               screen.blit(render_win, (WIDTH // 3 - 120, HEIGHT // 3 + 20))
+               # Обновляем экран, чтобы надпись была видна
+               pygame.display.flip()
+               # Процесс выхода в лоби/меню
+               for event in pygame.event.get():
+                  if event.type == pygame.QUIT:
+                        menu()
+               # Процесс перезагрузки игры 
+               key = pygame.key.get_pressed()
+               if key[pygame.K_r]:
+                  game_arcanoid()
+
+         key = pygame.key.get_pressed()
+
+         # Если жмал ты кнопку A(abc) или кнопку-стрелку в лево, то обрабатывается движение влево
          if (key[pygame.K_LEFT] or key[pygame.K_a]) and paddle.left > 0:
             paddle.left -= paddle_speed
 
+         # Если жмал ты кнопку D(abc) или кнопку-стрелку в право, то обрабатывается движение вправо
          if (key[pygame.K_RIGHT] or key[pygame.K_d]) and paddle.right < WIDTH:
             paddle.left += paddle_speed
 
@@ -861,32 +891,136 @@ def game_gravity_chicken():
    pygame.init()
    pygame.font.init()
 
+   # Setting
    HEIGHT, WIDTH = 800, 1200
+   SIZE = 80
+
+   map = [
+      [  "******************************",
+         "******************************",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "******************************",
+         "******************************",],
+
+      [  "******************************",
+         "******************************",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "******************************",
+         "******************************",],
+
+      [  "******************************",
+         "******************************",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "******************************",
+         "******************************",],
+      
+      [  "******************************",
+         "******************************",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "******************************",
+         "******************************",],
+
+      [  "******************************",
+         "******************************",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "------------------------------",
+         "******************************",
+         "******************************",],
+      ]
+   
+   def setting_map():
+      random.randint
+
+   world_map = set()
+
+   for j, rows in enumerate(map[0]):
+      for i, char in enumerate(rows):
+         if char == '*':
+            world_map.add((i * SIZE, j * SIZE))
+
    screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-   class Chicken():
-      down = True
-      def __init__(self, x, y):
-         super().__init__()
+   x, y = 320, 800-240
 
-         self.image = pygame.image.load(skin_player)
-         
-         self.change_x = 0
-         self.change_y = 0
+   chicken_cub = pygame.Rect(x, y, 80, 80)
+   skin_player = pygame.image.load("game_skins\\chicken.jpg").convert()
 
-
-
-   x, y = 0, 0
-   chicken_cub = pygame.Rect(x, y, 50, 50)
-   skin_player = "game_skins\\chicken.jpg"
-
-   fps = 60
+   fps = 80
    clock = pygame.time.Clock()
 
+   jump = False
+   Down = True
+
+   def jump_process(down):
+      global jump, x, y
+      jump = True
+      
+   def detect_collision(jump, cub, rect):
+      delta_x = cub.right - rect.left
+      
+      if jump == True:
+         delta_y = cub.bottom - rect.top
+      else:
+         delta_y = rect.bottom - cub.top
+      
+      return delta_x, delta_y
+
    while True:
+      screen.fill("#004900")
+      # if chicken_cub.colliderect(pole):
+         # detect_collision()
+
+      # screen.blit(skin_player, (x, y))
+      [pygame.draw.rect(screen, pygame.Color("#002200"), pygame.Rect())]#!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      pygame.draw.rect(screen, pygame.Color("#002200"), chicken_cub)
+      screen.blit(skin_player, (x, y))
+
+      for xd, yd in world_map:
+         pygame.draw.rect(screen, "#002200", (xd, yd, SIZE, SIZE))
+
+      key = pygame.key.get_pressed()
+
+      # А это обрабатываем нажатия 
+      if key[pygame.K_SPACE]:
+         if Down == False and jump == False:
+            Down = jump_process(Down)
+            jump = True
+
+         if Down == True and jump == False:
+            Down = jump_process(Down)
+            jump = True
+
+      # Процесс выхода из вкладки
+      for event in pygame.event.get():
+         if event.type == pygame.QUIT:
+            pygame.quit()
+      
       pygame.display.flip()
       clock.tick(fps)
-
 # Главное меню
 def menu():
    pygame.init()
@@ -944,4 +1078,5 @@ def menu():
 
          pygame.display.update()
 
-menu()
+# menu()
+game_gravity_chicken()
