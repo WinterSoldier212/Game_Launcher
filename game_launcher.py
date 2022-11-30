@@ -774,6 +774,7 @@ def game_ping_pong():
    # Для фпс
    fps = 60
    clock = pygame.time.Clock()
+
    def detect_collision(dx,dy, ball, rect):
       if dx > 0:
          delta_x = ball.right - rect.left
@@ -887,140 +888,232 @@ def game_ping_pong():
       pygame.display.flip()
       clock.tick(fps)
 
-def game_gravity_chicken():
+# def game_gravity_chicken():
+   # pygame.init()
+   # pygame.font.init()
+
+   # # Setting
+   # HEIGHT, WIDTH = 800, 1200
+   # SIZE = 80
+
+   # map = [
+   #    [  "******************************",
+   #       "******************************",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "******************************",
+   #       "******************************",],
+
+   #    [  "******************************",
+   #       "******************************",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "******************************",
+   #       "******************************",],
+
+   #    [  "******************************",
+   #       "******************************",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "******************************",
+   #       "******************************",],
+      
+   #    [  "******************************",
+   #       "******************************",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "******************************",
+   #       "******************************",],
+
+   #    [  "******************************",
+   #       "******************************",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "------------------------------",
+   #       "******************************",
+   #       "******************************",],
+   #    ]
+   
+   # def setting_map():
+   #    random.randint
+
+   # world_map = set()
+
+   # for j, rows in enumerate(map[0]):
+   #    for i, char in enumerate(rows):
+   #       if char == '*':
+   #          world_map.add((i * SIZE, j * SIZE))
+
+   # screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+   # x, y = 320, 800-240
+
+   # chicken_cub = pygame.Rect(x, y, 80, 80)
+   # skin_player = pygame.image.load("game_skins\\chicken.jpg").convert()
+
+   # fps = 80
+   # clock = pygame.time.Clock()
+
+   # jump = False
+   # Down = True
+
+   # def jump_process(down):
+   #    global jump, x, y
+   #    jump = True
+      
+   # def detect_collision(jump, cub, rect):
+   #    delta_x = cub.right - rect.left
+      
+   #    if jump == True:
+   #       delta_y = cub.bottom - rect.top
+   #    else:
+   #       delta_y = rect.bottom - cub.top
+      
+   #    return delta_x, delta_y
+
+   # while True:
+   #    screen.fill("#004900")
+   #    # if chicken_cub.colliderect(pole):
+   #       # detect_collision()
+
+   #    # screen.blit(skin_player, (x, y))
+   #    [pygame.draw.rect(screen, pygame.Color("#002200"), pygame.Rect())]#!!!!!!!!!!!!!!!!!
+   #    pygame.draw.rect(screen, pygame.Color("#002200"), chicken_cub)
+   #    screen.blit(skin_player, (x, y))
+
+   #    for xd, yd in world_map:
+   #       pygame.draw.rect(screen, "#002200", (xd, yd, SIZE, SIZE))
+
+   #    key = pygame.key.get_pressed()
+
+   #    # А это обрабатываем нажатия 
+   #    if key[pygame.K_SPACE]:
+   #       if Down == False and jump == False:
+   #          Down = jump_process(Down)
+   #          jump = True
+
+   #       if Down == True and jump == False:
+   #          Down = jump_process(Down)
+   #          jump = True
+
+   #    # Процесс выхода из вкладки
+   #    for event in pygame.event.get():
+   #       if event.type == pygame.QUIT:
+   #          pygame.quit()
+      
+   #    pygame.display.flip()
+   #    clock.tick(fps)
+
+def game_RPG():
    pygame.init()
    pygame.font.init()
 
-   # Setting
-   HEIGHT, WIDTH = 800, 1200
-   SIZE = 80
+   screen = pygame.display.set_mode((1200, 800))
 
-   map = [
-      [  "******************************",
-         "******************************",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "******************************",
-         "******************************",],
-
-      [  "******************************",
-         "******************************",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "******************************",
-         "******************************",],
-
-      [  "******************************",
-         "******************************",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "******************************",
-         "******************************",],
-      
-      [  "******************************",
-         "******************************",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "******************************",
-         "******************************",],
-
-      [  "******************************",
-         "******************************",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "------------------------------",
-         "******************************",
-         "******************************",],
-      ]
+   bg_doroga = pygame.image.load("background\\bg_doroga.png").convert()
+   bg_avanpost = pygame.image.load("background\\bg_avanpost.jpg").convert()
+   bg_magazin = pygame.image.load("background\\bg_magazin.jpg").convert()
+   bg_derevna_ribaka = pygame.image.load("background\\bg_ribak.jpg").convert()
+   bg_derevna = pygame.image.load("background\\bg_derevna.jpg").convert()
    
-   def setting_map():
-      random.randint
+   # Player status
+   player_HP = 3
+   player_SPEED = 1
+   player_MONEY = 5
+   player_DAMAGE = 1
+   player_DEFENCE = 1
+   player_INTELECT = 1
+   player_LEVEL = 1
+   player_PICE = 0
+   player_LUKY = random.randint(0,3)
 
-   world_map = set()
+   def drop(luky):
+      item = [0, 1, 2, 3, "pice", 4, 5]
+      drop = random.choice(item[luky : luky - 4])
+      return drop
+   
+   def danger(luky, level):
+      bag_lvl_1 = {
+         "hp": 1,
+         "damage": 1,
+         "defence": 0,
+         "intelect": 0,
+         "drop": drop(player_LUKY),
+      }
+      bag_lvl_2 = {
+         "hp": 2,
+         "damage": 1,
+         "defence": 1,
+         "intelect": 0,
+         "drop": drop(player_LUKY),
+      }
+      bag_lvl_3 = {
+         "hp": 3,
+         "damage": 2,
+         "defence": 2,
+         "intelect": 0,
+         "drop": drop(player_LUKY),
+      }
+      orc_lvl_1 = {
+         "hp": 2,
+         "damage": 1,
+         "defence": 1,
+         "intelect": 0,
+         "drop": drop(player_LUKY),
+      }
+      orc_lvl_2 = {
+         "hp": 3,
+         "damage": 2,
+         "defence": 1,
+         "intelect": 0,
+         "drop": drop(player_LUKY),
+      }
+      orc_lvl_3 = {
+         "hp": 5,
+         "damage": 3,
+         "defence": 2,
+         "intelect": 0,
+         "drop": drop(player_LUKY),
+      }
+      
 
-   for j, rows in enumerate(map[0]):
-      for i, char in enumerate(rows):
-         if char == '*':
-            world_map.add((i * SIZE, j * SIZE))
-
-   screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
-   x, y = 320, 800-240
-
-   chicken_cub = pygame.Rect(x, y, 80, 80)
-   skin_player = pygame.image.load("game_skins\\chicken.jpg").convert()
-
-   fps = 80
+   # FPS
+   fps = 60
    clock = pygame.time.Clock()
 
-   jump = False
-   Down = True
+   bg_game = bg_doroga
+   while 1:
+      screen.blit(bg_game, (0,0))
 
-   def jump_process(down):
-      global jump, x, y
-      jump = True
-      
-   def detect_collision(jump, cub, rect):
-      delta_x = cub.right - rect.left
-      
-      if jump == True:
-         delta_y = cub.bottom - rect.top
-      else:
-         delta_y = rect.bottom - cub.top
-      
-      return delta_x, delta_y
 
-   while True:
-      screen.fill("#004900")
-      # if chicken_cub.colliderect(pole):
-         # detect_collision()
 
-      # screen.blit(skin_player, (x, y))
-      [pygame.draw.rect(screen, pygame.Color("#002200"), pygame.Rect())]#!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      pygame.draw.rect(screen, pygame.Color("#002200"), chicken_cub)
-      screen.blit(skin_player, (x, y))
-
-      for xd, yd in world_map:
-         pygame.draw.rect(screen, "#002200", (xd, yd, SIZE, SIZE))
-
-      key = pygame.key.get_pressed()
-
-      # А это обрабатываем нажатия 
-      if key[pygame.K_SPACE]:
-         if Down == False and jump == False:
-            Down = jump_process(Down)
-            jump = True
-
-         if Down == True and jump == False:
-            Down = jump_process(Down)
-            jump = True
-
-      # Процесс выхода из вкладки
       for event in pygame.event.get():
+         # Если выключаем вкладку - программа выключается
          if event.type == pygame.QUIT:
-            pygame.quit()
-      
+            menu()
+
       pygame.display.flip()
       clock.tick(fps)
+
 # Главное меню
 def menu():
    pygame.init()
@@ -1079,4 +1172,5 @@ def menu():
          pygame.display.update()
 
 # menu()
-game_gravity_chicken()
+game_RPG()
+# game_gravity_chicken()
