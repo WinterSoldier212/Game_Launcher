@@ -1039,9 +1039,9 @@ def game_RPG():
    player_HP = 3
    player_SPEED = 1
    player_MONEY = 5
-   player_DAMAGE = 1
+   player_DAMAGE = 1.5
    player_DEFENCE = 1
-   player_INTELECT = 1
+   player_EXP = 0
    player_LEVEL = 1
    player_PICE = 0
    player_LUKY = random.randint(0,3)
@@ -1056,45 +1056,142 @@ def game_RPG():
          "hp": 1,
          "damage": 1,
          "defence": 0,
-         "intelect": 0,
+         "speed": 2,
          "drop": drop(player_LUKY),
+         "exp": 1,
       }
       bag_lvl_2 = {
          "hp": 2,
          "damage": 1,
          "defence": 1,
-         "intelect": 0,
+         "speed": 2,
          "drop": drop(player_LUKY),
+         "exp": 3,
       }
       bag_lvl_3 = {
          "hp": 3,
          "damage": 2,
          "defence": 2,
-         "intelect": 0,
+         "speed": 3,
          "drop": drop(player_LUKY),
+         "exp": 5,
       }
+      
       orc_lvl_1 = {
          "hp": 2,
          "damage": 1,
          "defence": 1,
-         "intelect": 0,
+         "speed": 1,
          "drop": drop(player_LUKY),
+         "exp": 2,
       }
       orc_lvl_2 = {
          "hp": 3,
          "damage": 2,
-         "defence": 1,
-         "intelect": 0,
+         "defence": 2,
+         "speed": 1,
          "drop": drop(player_LUKY),
+         "exp": 5,
       }
       orc_lvl_3 = {
          "hp": 5,
          "damage": 3,
          "defence": 2,
-         "intelect": 0,
+         "speed": 2,
          "drop": drop(player_LUKY),
+         "exp": 8,
       }
       
+      bandgoblin_lvl_1 = {
+         "hp": 2,
+         "damage": bandgoblin_lvl_1["hp"],
+         "defence": 0,
+         "speed": 2,
+         "drop": drop(player_LUKY),
+         "exp": 3,
+      }
+      bandgoblin_lvl_2 = {
+         "hp": 4,
+         "damage": bandgoblin_lvl_2["hp"],
+         "defence": 0,
+         "speed": 2,
+         "drop": drop(player_LUKY),
+         "exp": 5,
+      }
+      bandgoblin_lvl_3 = {
+         "hp": 6,
+         "damage": bandgoblin_lvl_3["hp"],
+         "defence": 0,
+         "speed": 2,
+         "drop": drop(player_LUKY),
+         "exp": 10,
+      }
+
+      skeleton_lvl_1 = {
+         "hp": 2,
+         "damage": 2,
+         "defence": 0,
+         "speed": 2,
+         "drop": drop(player_LUKY),
+         "exp": 3,         
+      }
+      skeleton_lvl_2 = {
+         "hp": 4,
+         "damage": 3,
+         "defence": 0,
+         "speed": 3,
+         "drop": drop(player_LUKY),
+         "exp": 6,         
+      }
+      skeleton_lvl_3 = {
+         "hp": 6,
+         "damage": 4,
+         "defence": 0,
+         "speed": 3,
+         "drop": drop(player_LUKY),
+         "exp": 9,         
+      }
+
+      baby_boom_lvl_1 = {
+         "hp": 3,
+         "damage": 1,
+         "defence": 0,
+         "speed": 3,
+         "drop": -3 if player_SPEED < 2 else 0,
+         "exp": 3,         
+      }
+      baby_boom_lvl_2 = {
+         "hp": 3,
+         "damage": 1,
+         "defence": 0,
+         "speed": 3,
+         "drop": -4 if player_SPEED < 3 else 0,
+         "exp": 5,         
+      }
+      baby_boom_lvl_3 = {
+         "hp": 3,
+         "damage": 1,
+         "defence": 0,
+         "speed": 3,
+         "drop": -5 if player_SPEED < 4 else 0,
+         "exp": 8,         
+      }
+
+      monsters_1_level = []
+      monsters_2_level = []
+      monsters_3_level = []
+      monsters_4_level = []
+
+      if level == 1:
+         danger = random.choice(monsters_1_level)
+      if level == 2:
+         danger = random.choice(monsters_2_level)
+      if level == 3:
+         danger = random.choice(monsters_3_level)
+      if level == 4:
+         danger = random.choice(monsters_4_level)
+      
+      return danger
 
    # FPS
    fps = 60
@@ -1104,6 +1201,7 @@ def game_RPG():
    while 1:
       screen.blit(bg_game, (0,0))
 
+      
 
 
       for event in pygame.event.get():
